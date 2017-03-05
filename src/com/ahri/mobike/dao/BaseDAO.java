@@ -9,7 +9,8 @@ import java.sql.Connection;
  */
 public class BaseDAO {
     protected Connection conn;
-    protected BaseDAO(){
+
+    protected BaseDAO() {
         conn = DBUtil.getConnection();
     }
 

@@ -9,21 +9,18 @@ import com.ahri.mobike.dao.DetailDAO;
 import com.ahri.mobike.dao.JournalInfoDAO;
 import com.ahri.mobike.dao.MobikeDAO;
 import com.ahri.mobike.dao.UserDAO;
-import com.ahri.mobike.util.BasicUtils;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 
 /**
  * Created by zouyingjie on 2017/2/22.
  */
-public class MobikeAction {
+public class MobikeAction extends BaseAction {
 
-    private static final String sessionKey = "adikdiqlhaq88686a8qjdg124dgs";
 
     /**
      * 注册用户
@@ -40,17 +37,14 @@ public class MobikeAction {
      * 包括:总骑行公里, 节约碳排放, 运动成就
      * 昵称, 余额
      */
-    public User login(String phone, String password, String sign) throws SQLException {
-        Map<String, String> params = new TreeMap<>();
-        params.put("PHONE", phone);
-        params.put("PASSWORD", password);
-        String checkSign = BasicUtils.makeSign(params, sessionKey);
-        if (!checkSign.equals(sign)) {
-            return null;
+    public User login(TreeMap<String, String> params, String sign) throws SQLException {
+
+        if (super.checkSign(params, sign)) {
+            UserDAO userDAO = UserDAO.getInstance();
+            int salt = userDAO.querySalt(params.get("PHONE"));
+            return userDAO.query(params.get("PHONE"), DigestUtils.md5Hex(params.get("PASSWORD") + salt + sessionKey));
         }
-        UserDAO userDAO = UserDAO.getInstance();
-        int salt = userDAO.querySalt(phone);
-        return userDAO.query(phone, DigestUtils.md5Hex(password + salt + sessionKey));
+        return null;
     }
 
     /**
@@ -58,7 +52,6 @@ public class MobikeAction {
      */
 
     public List<MobikeBicycle> searchMobike(String latitude, String longitude) throws SQLException {
-
         MobikeDAO mobikeDAO = MobikeDAO.getInstance();
         return mobikeDAO.searchMobike(latitude, longitude);
     }
@@ -120,7 +113,7 @@ public class MobikeAction {
     /**
      * 开锁取车,开始交易
      */
-    public boolean openLock(User user, String mobikeId)  {
+    public boolean openLock(User user, String mobikeId) {
         try {
             //更改单车的使用状态,使用用户,最后使用时间,
             MobikeDAO mobikeDAO = MobikeDAO.getInstance();

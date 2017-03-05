@@ -89,7 +89,7 @@ public class UserDAO extends BaseDAO {
 
         if (resultSet.next()) {
             return resultSet.getInt("salt");
-        }else {
+        } else {
             return 0;
         }
     }
@@ -125,8 +125,9 @@ public class UserDAO extends BaseDAO {
      * 修改余额
      */
     public void updateBalance(User user) throws SQLException {
-        String sql = "UPDATE USER SET balance = " + user.getBalance() + " WHERE user_id = " + user.getUserId();
+        String sql = "UPDATE USER SET balance = " + user.getBalance() + " WHERE user_id = ?;";
         PreparedStatement prst = conn.prepareStatement(sql);
+        prst.setString(1, user.getUserId());
         int update = prst.executeUpdate();
         if (update > 0) {
             System.out.println("Update Success");
@@ -139,9 +140,10 @@ public class UserDAO extends BaseDAO {
      * 修改用户名
      */
     public void updateUserName(User user) throws SQLException {
-        String sql = "UPDATE USER SET user_name = " + "?" + " WHERE user_id = " + user.getUserId();
+        String sql = "UPDATE USER SET user_name = " + "?" + " WHERE user_id = ?;";
         PreparedStatement prst = conn.prepareStatement(sql);
         prst.setString(1, user.getUserName());
+        prst.setString(2, user.getUserId());
         int update = prst.executeUpdate();
         if (update > 0) {
             System.out.println("Update Success");
@@ -154,9 +156,10 @@ public class UserDAO extends BaseDAO {
      * 修改电话号码
      */
     public void updateUserPhone(User user) throws SQLException {
-        String sql = "UPDATE USER SET user_phone = " + "?" + " WHERE user_id = " + user.getUserId();
+        String sql = "UPDATE USER SET user_phone = " + "?" + " WHERE user_id = ?;";
         PreparedStatement prst = conn.prepareStatement(sql);
         prst.setString(1, user.getUserPhone());
+        prst.setString(2, user.getUserId());
         int update = prst.executeUpdate();
         if (update > 0) {
             System.out.println("Update Success");
@@ -170,9 +173,10 @@ public class UserDAO extends BaseDAO {
      */
 
     public void updateAntecedentMoney(User user) throws SQLException {
-        String sql = "UPDATE USER SET antecedent_money = " + "?" + " WHERE user_id = " + user.getUserId();
+        String sql = "UPDATE USER SET antecedent_money = " + "?" + " WHERE user_id = ?;";
         PreparedStatement prst = conn.prepareStatement(sql);
         prst.setDouble(1, user.getAntecedentMoney());
+        prst.setString(2, user.getUserId());
         int update = prst.executeUpdate();
         if (update > 0) {
             System.out.println("Update Success");
@@ -186,10 +190,11 @@ public class UserDAO extends BaseDAO {
      */
 
     public void updateLocation(User user) throws SQLException {
-        String sql = "UPDATE USER SET latitude = " + "? , longitude = " + "? WHERE user_id = " + user.getUserId();
+        String sql = "UPDATE USER SET latitude = " + "? , longitude = " + "? WHERE user_id = ?;";
         PreparedStatement prst = conn.prepareStatement(sql);
         prst.setString(1, user.getLatitude());
         prst.setString(2, user.getLongitude());
+        prst.setString(3, user.getUserId());
         int update = prst.executeUpdate();
         if (update > 0) {
             System.out.println("Update Success");
@@ -202,9 +207,10 @@ public class UserDAO extends BaseDAO {
      * 修改租车状态
      */
     public void updateIsCycling(User user) throws SQLException {
-        String sql = "UPDATE USER SET is_cycling = " + user.getIsCycling() + " WHERE user_id = ?;";
+        String sql = "UPDATE USER SET is_cycling = ?" + " WHERE user_id = ?;";
         PreparedStatement prst = conn.prepareStatement(sql);
-        prst.setString(1, user.getUserId());
+        prst.setInt(1, user.getIsCycling());
+        prst.setString(2, user.getUserId());
         boolean execute = prst.execute();
         if (prst.getUpdateCount() > 0) {
             System.out.println("Update Success");
@@ -217,8 +223,9 @@ public class UserDAO extends BaseDAO {
      * 通过电话 查询UserId
      */
     public String queryUserId(String phone) throws SQLException {
-        String sql = "SELECT user_id FROM USER WHERE user_phone = '" + phone + "'";
+        String sql = "SELECT user_id FROM USER WHERE user_phone = ?;" ;
         PreparedStatement prst = conn.prepareStatement(sql);
+        prst.setString(1, phone);
         ResultSet resultSet = prst.executeQuery();
         String userId = "";
         while (resultSet.next()) {

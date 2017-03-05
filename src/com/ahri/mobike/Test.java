@@ -153,14 +153,14 @@ public class Test {
             }
 
         }
-        Map<String, String> params = new TreeMap<>();
-        params.put("PHONE", phone);
-        params.put("PASSWORD", password);
+        TreeMap<String, String> params = new TreeMap<>();
+        params.put("PHONE", phone.toLowerCase());
+        params.put("PASSWORD", password.toLowerCase());
         String sign = makeSign(params);
-        MobikeAction action = new MobikeAction();
 
+        MobikeAction action = new MobikeAction();
         try {
-            User user = action.login(phone, password, sign);
+            User user = action.login(params, sign);
             if (user == null) {
                 System.out.println("用户不存在或者密码不正确");
                 System.out.println("登录失败,请重新输入 LOGIN 进行登录");

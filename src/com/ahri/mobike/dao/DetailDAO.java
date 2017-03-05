@@ -12,11 +12,13 @@ import java.util.List;
 /**
  * Created by zouyingjie on 2017/2/21.
  */
-public class DetailDAO extends BaseDAO{
+public class DetailDAO extends BaseDAO {
     private static DetailDAO DAO;
-    private DetailDAO(){}
 
-    public static DetailDAO getInstance(){
+    private DetailDAO() {
+    }
+
+    public static DetailDAO getInstance() {
         if (DAO == null) {
             synchronized (DetailDAO.class) {
                 if (DAO == null) {
@@ -26,19 +28,21 @@ public class DetailDAO extends BaseDAO{
         }
         return DAO;
     }
+
     /**
      * 查询交易列表
      */
     public List<DealDetail> quary(String userId) throws SQLException {
 
         String sql = "SELECT deal_type, " +
-                            "deal_money, " +
-                            "deal_finish_time, " +
-                            "deal_start_time, " +
-                            "deal_pay, deal_desc " +
-                        " FROM DEAL_DETAIL_LIST " + "WHERE user_id = " + userId + " ORDER BY deal_start_time;";
+                "deal_money, " +
+                "deal_finish_time, " +
+                "deal_start_time, " +
+                "deal_pay, deal_desc " +
+                " FROM DEAL_DETAIL_LIST WHERE user_id = ? ORDER BY deal_start_time;";
 
         PreparedStatement prst = conn.prepareStatement(sql);
+        prst.setString(1, userId);
         System.out.println(sql);
         ResultSet rs = prst.executeQuery();
         List<DealDetail> list = new ArrayList<>();
@@ -69,17 +73,16 @@ public class DetailDAO extends BaseDAO{
                 "deal_start_time, " +
                 "deal_state)" +
                 "values" + "(" +
-                dealDetail.getUserId() + "," +
-                dealDetail.getDealMoney() + "," +
-                dealDetail.getDealType() + "," +
-                dealDetail.getDealPay() + "," +
-                "?," +
-                dealDetail.getDealState() + ");";
+                dealDetail.getUserId() + "?,?,?,?,?,?);";
 
         PreparedStatement prst = conn.prepareStatement(sql);
-
+        prst.setString(1, dealDetail.getUserId());
+        prst.setDouble(2, dealDetail.getDealMoney());
+        prst.setInt(3, dealDetail.getDealType());
+        prst.setDouble(4, dealDetail.getDealPay());
         Timestamp timestamp = new Timestamp(dealDetail.getDealStartTime().getTime());
-        prst.setString(1, timestamp.toString());
+        prst.setString(5, timestamp.toString());
+        prst.setInt(6, dealDetail.getDealState());
 
         System.out.println(sql);
         boolean execute = prst.execute();

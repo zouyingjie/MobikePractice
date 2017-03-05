@@ -84,9 +84,10 @@ public class JournalInfoDAO extends BaseDAO{
 
     public List<JournalInfo> queryAll(String userId) throws SQLException {
 
-        String sql = "SELECT * FROM JOURNAL_INFO WHERE user_id = " + userId;
+        String sql = "SELECT * FROM JOURNAL_INFO WHERE user_id = ?;";
 
         PreparedStatement prst = conn.prepareStatement(sql);
+        prst.setString(1, userId);
         ResultSet rs = prst.executeQuery();
         List<JournalInfo> journalInfos = new ArrayList<>();
         JournalInfo journalInfo = null;
